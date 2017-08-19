@@ -1,76 +1,78 @@
 import path from 'upath';
-import parser from 'another-name-parser';
 import _ from 'lodash';
+import { joinName, parseName, parseNames, alphabetizedTitle } from './utils';
+
+/*
+ * This module is meant to be used in the context of digital collections of texts.
+ * The purpose of this module is to extract as much information from each file path as possible,
+ * which means that it assumes the paths are structured according to a consistent logic.
+ */
 
 // Files to ignore, even if they are in the right place
 const ignore = ['.DS_Store', '.dat', '.git', 'nohup.out'];
 // The possible parser choices available
 const choices = ['calibre', 'flat'];
 
-
 // These might reformat the input data to create a path.
 // This newly created path will be reversible: parser <--> formatter
-const reformatters = {
-  // Every part of calibre path structure is downloadable
-  calibre: (author, title, file) => path.join(author, title, file),
-  // With flat files the filename is discarded and the title is used.
-  flat: (author, title, file) => {
-    const ext = path.extname(file);
-    const name = parser(author);
-    const lastName = name.last ? `${name.last},` : undefined;
-    const authorPart = _.join(_.compact([lastName, name.prefix, name.first, name.middle, name.suffix]), ' ');
-    return `${authorPart} - ${title}${ext}`;
-  },
-};
-
-// These formatters do the work of formatting data into filepaths
-// `makeNewPath` means that the options are the values used for the consruction of a new path
-// as opposed to the default, which is trying to match what has been parsed
 const formatters = {
   // Every part of calibre path structure is downloadable
-  calibre: (opts) => {
-    if (opts.author && opts.title && opts.file) return path.join(opts.author, opts.title, opts.file);
-    if (opts.author && opts.title && !opts.file) return path.join(opts.author, opts.title);
-    if (opts.author && !opts.title && !opts.file) return opts.author;
-    return false;
+  calibre: (authors, title, file) => path.join(_.first(authors), title, file),
+  // With flat files the filename is discarded and the title is used.
+  flat: (authors, title, file) => {
+    const formatName = n => joinName(parseName(n), true);
+    const ext = path.extname(file);
+    const authorPart = _.join(_.take(authors, 3).map(a => formatName(a)), ';');
+    return `${authorPart} - ${title}${ext}`;
   },
-  // With flat files, ONLY the full file path is downloadable
-  flat: opts => (opts.file) ? opts.file : false,
 };
 
 // These parsers do the work of parsing filepaths
 const parsers = {
   // Calibre parser is the default one
-  calibre: (pathArr) => {
+  calibre: (pathArr, filePath) => {
     if (pathArr.length === 3 && !ignore.includes(pathArr[2])) {
-      const name = parser(pathArr[0]);
+      const parsed = parseNames([pathArr[0]]);
+      const authors = parsed.map(n => ({
+        author: joinName(n),
+        author_sort: n.original,
+        role: n.role || undefined,
+      }));
       return {
-        author: pathArr[0],
-        author_sort: `${name.last}, ${name.first}`,
+        authors,
+        author_sort: joinName(authors[0].author_sort, true),
         title: pathArr[1],
+        title_sort: alphabetizedTitle(pathArr[1]),
         file: pathArr[2],
+        path: filePath,
         format: 'calibre',
       };
     }
     return false;
   },
   // The Flat style is "Last name, First name; Second Author, Optional - Title.filetype"
-  flat: (pathArr) => {
+  flat: (pathArr, filePath) => {
     if (pathArr.length === 1) {
       const file = pathArr[0];
       const ext = path.extname(file);
       const parts = file.split(' - ');
       if (parts.length === 2) {
         const title = parts[1].replace(ext, '');
-        const authorSort = parts[0];
-        const name = parser(authorSort.split(';')[0]);
-        const author = _.join(_.compact([name.prefix, name.first, name.middle, name.last, name.suffix]), ' ');
-        if (author && title) {
+        const authorNames = parts[0].split(';');
+        const parsed = parseNames(authorNames);
+        const authors = parsed.map(n => ({
+          author: joinName(n),
+          author_sort: n.original,
+          role: n.role || undefined,
+        }));
+        if (authors.length && title) {
           return {
-            author,
-            author_sort: authorSort,
+            authors,
+            author_sort: authors[0].author_sort,
             title,
+            title_sort: alphabetizedTitle(title),
             file,
+            path: filePath,
             format: 'flat',
           };
         }
@@ -80,20 +82,8 @@ const parsers = {
   },
 };
 
-// This creates a new path in the defined format.
-export function reformatPath(author, title, file, format) {
-  return reformatters[format](author, title, file);
-}
 
 // This creates a path in the defined format.
-// It should usually reverse the parser, BUT:
-// note that if only partial options (not all of author, title, file)
-// are given, then a partial download path is only given IF the dat/hyperdrive
-// supports the partial format (for example, an Author directory will be returned
-// because an entire directory can be downloaded, but an Author* wildcard match of
-// a bunch of files won't be returned because hyperdrive doesn't support wildcards).
-// So some formats will return false if there is no way to get eg. all things by an
-// author, and the caller will have to determine what to do from there.
 export function formatPath(opts) {
   if (!opts.format) return false;
   return formatters[opts.format](opts);
@@ -115,7 +105,7 @@ export default function (file, format) {
   }
   // Otherwise try out each format (in order specified by "choices") and see if any work
   for (const choice of choices) {
-    const result = parsers[choice](arr);
+    const result = parsers[choice](arr, file);
     if (result) {
       return result;
     }

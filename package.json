@@ -1,6 +1,6 @@
 {
   "name": "dat-cardcat-formats",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Path formats for items in library archives.",
   "main": "index.js",
   "scripts": {
