@@ -30,49 +30,32 @@ const validPaths = [
 
 const formattedPaths = [
   {
-    author: 'Edward Said',
-    title: 'Edward Said/After Colonialism: Imperial Histories and Postcolonial Displacements',
-    full: 'Edward Said/After Colonialism: Imperial Histories and Postcolonial Displacements/metadata.opf',
+    authors: ['Edward Said'],
+    title: 'After Colonialism: Imperial Histories and Postcolonial Displacements',
+    file: 'metadata.opf',
+    calibre: 'Edward Said/After Colonialism: Imperial Histories and Postcolonial Displacements/metadata.opf',
+    flat: 'Said, Edward - After Colonialism: Imperial Histories and Postcolonial Displacements.opf',
   },
   {
-    author: false,
-    title: false,
-    full: 'Said, Edward - After Colonialism: Imperial Histories and Postcolonial Displacements.opf',
+    authors: ['BAVO (eds.)'],
+    title: 'Cultural Activism Today. The Art of Over-Identification',
+    file: 'metadata.opf',
+    calibre: 'BAVO (editors)/Cultural Activism Today. The Art of Over-Identification/metadata.opf',
+    flat: 'BAVO (editors) - Cultural Activism Today. The Art of Over-Identification.opf',
   },
   {
-    author: 'BAVO (eds.)',
-    title: 'BAVO (eds.)/Cultural Activism Today. The Art of Over-Identification', 
-    full: 'BAVO (eds.)/Cultural Activism Today. The Art of Over-Identification/metadata.opf',
+    authors: ['Susan Buck-Morss'],
+    title: 'Hegel y Haití. La dialéctica amo-esclavo, una interpretación revolucionaria (Spanish)',
+    file: 'metadata.opf',
+    calibre: 'Susan Buck-Morss/Hegel y Haití. La dialéctica amo-esclavo, una interpretación revolucionaria (Spanish)/metadata.opf',
+    flat: 'Buck-Morss, Susan - Hegel y Haití. La dialéctica amo-esclavo, una interpretación revolucionaria (Spanish).opf',
   },
   {
-    author: false,
-    title: false,
-    full: 'BAVO (eds.) - Cultural Activism Today. The Art of Over-Identification.opf',
-  },
-  {
-    author: 'Susan Buck-Morss',
-    title: 'Susan Buck-Morss/Hegel y Haití. La dialéctica amo-esclavo, una interpretación revolucionaria (Spanish)',
-    full: 'Susan Buck-Morss/Hegel y Haití. La dialéctica amo-esclavo, una interpretación revolucionaria (Spanish)/metadata.opf',
-  },
-  {
-    author: false,
-    title: false,
-    full: 'Buck-Morss, Susan - Hegel y Haití. La dialéctica amo-esclavo, una interpretación revolucionaria (Spanish).opf',
-  },
-  {
-    author: 'Edward Said',
-    title: 'Edward Said/After Colonialism: Imperial Histories and Postcolonial Displacements',
-    full: 'Edward Said/After Colonialism: Imperial Histories and Postcolonial Displacements/metadata.opf',
-  },
-  {
-    author: false,
-    title: false,
-    full: 'Said, Edward - After Colonialism: Imperial Histories and Postcolonial Displacements.opf',
-  },
-  {
-    author: false,
-    title: false,
-    full: 'Buden, Boris; Žilnik, Želimir; kuda.org, et al. - Uvod u prošlost (Serbian).opf',
+    authors: ['Boris Buden', 'Želimir Žilnik', 'kuda.org'],
+    title: 'Uvod u prošlost (Serbian)',
+    file: 'metadata.opf',
+    calibre: 'Boris Buden/Uvod u prošlost (Serbian)/metadata.opf',
+    flat: 'Buden, Boris; Žilnik, Želimir; kuda.org - Uvod u prošlost (Serbian).opf',
   },
 ];
 
@@ -217,28 +200,22 @@ describe('Cardcat parsers', () => {
 
 
 describe('Cardcat formatters', () => {
-/*
-  for (let i =0; i < correctData.length; i++) {
+  for (let i = 0; i < formattedPaths.length; i++) {
     context('formatting paths ' + i, () => {
-      const formattedAuthor = formatPath({ author: correctData[i].author, format: correctData[i].format }, false);
-      const formattedTitle = formatPath({ author: correctData[i].author, title: correctData[i].title, format: correctData[i].format }, false);
-      const formatted = formatPath(correctData[i], false);
+      const formattedCalibre = formatPath(formattedPaths[i].authors, formattedPaths[i].title, formattedPaths[i].file, 'calibre');
+      const formattedFlat = formatPath(formattedPaths[i].authors, formattedPaths[i].title, formattedPaths[i].file, 'flat');
 
-      it('author has the path "' + formattedPaths[i].author + '"', () => {
-        expect(formattedAuthor).to.eql(formattedPaths[i].author);
+      it('"calibre" has the path "' + formattedPaths[i].calibre + '"', () => {
+        expect(formattedCalibre).to.eql(formattedPaths[i].calibre);
       });
 
-      it('author has the path "' + formattedPaths[i].title + '"', () => {
-        expect(formattedTitle).to.eql(formattedPaths[i].title);
-      });
-
-      it('full has the path "' + formattedPaths[i].full + '"', () => {
-        expect(formatted).to.eql(formattedPaths[i].full);
+      it('"flat" has the path "' + formattedPaths[i].flat + '"', () => {
+        expect(formattedFlat).to.eql(formattedPaths[i].flat);
       });
 
     });
   }
-*/
+
 });
 
 // @TODO: test reformatters

@@ -40,10 +40,11 @@ export function parseNames(names) {
 }
 
 // Joins a name into a string representation
-export function joinName(name, alphabetical) {
-  if (alphabetical) {
+export function joinName(name, opts = {}) {
+  const role = (name.role && opts.includeRole) ? `(${name.role})` : null;
+  if (opts.alphabetical) {
     const lastName = name.last ? `${name.last},` : undefined;
-    return _.join(_.compact([lastName, name.prefix, name.first, name.middle, name.suffix]), ' ');
+    return _.join(_.compact([lastName, name.prefix, name.first, name.middle, name.suffix, role]), ' ');
   }
-  return _.join(_.compact([name.prefix, name.first, name.middle, name.last, name.suffix]), ' ');
+  return _.join(_.compact([name.prefix, name.first, name.middle, name.last, name.suffix, role]), ' ');
 }

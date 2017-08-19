@@ -17,12 +17,16 @@ const choices = ['calibre', 'flat'];
 // This newly created path will be reversible: parser <--> formatter
 const formatters = {
   // Every part of calibre path structure is downloadable
-  calibre: (authors, title, file) => path.join(_.first(authors), title, file),
+  calibre: (authors, title, file) => path.join(
+    joinName(parseName(_.first(authors)), { includeRole: true }),
+    title,
+    file,
+  ),
   // With flat files the filename is discarded and the title is used.
   flat: (authors, title, file) => {
-    const formatName = n => joinName(parseName(n), true);
+    const formatName = n => joinName(parseName(n), { alphabetical: true, includeRole: true });
     const ext = path.extname(file);
-    const authorPart = _.join(_.take(authors, 3).map(a => formatName(a)), ';');
+    const authorPart = _.join(_.take(authors, 3).map(a => formatName(a)), '; ');
     return `${authorPart} - ${title}${ext}`;
   },
 };
@@ -40,7 +44,7 @@ const parsers = {
       }));
       return {
         authors,
-        author_sort: joinName(authors[0].author_sort, true),
+        author_sort: joinName(authors[0].author_sort, { alphabetical: true }),
         title: pathArr[1],
         title_sort: alphabetizedTitle(pathArr[1]),
         file: pathArr[2],
@@ -84,9 +88,9 @@ const parsers = {
 
 
 // This creates a path in the defined format.
-export function formatPath(opts) {
-  if (!opts.format) return false;
-  return formatters[opts.format](opts);
+export function formatPath(authors, title, file, format = 'calibre') {
+  if (!format) return false;
+  return formatters[format](authors, title, file);
 }
 
 // Does the given candidate pass one of the parsers?
