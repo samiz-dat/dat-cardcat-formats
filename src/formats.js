@@ -11,7 +11,7 @@ import { joinName, parseName, parseNames, alphabetizedTitle } from './utils';
 // Files to ignore, even if they are in the right place
 const ignore = ['.DS_Store', '.dat', '.git', 'nohup.out'];
 // The possible parser choices available
-const choices = ['oml', 'calibre', 'flat'];
+const choices = ['oml', 'calibre', 'flat', 'opf'];
 
 // These might reformat the input data to create a path.
 // This newly created path will be reversible: parser <--> formatter
@@ -43,6 +43,21 @@ const formatters = {
       authorPart,
       `${title}${ext}`,
     );
+  },
+  // Doesn't return a path, but an object in the format expected by open-packaging-format
+  opf: (authors, title) => {
+    const formatName = (n) => {
+      const parsed = parseName(n);
+      return {
+        value: joinName(parsed),
+        fileAs: joinName(parsed, { alphabetical: true }),
+        role: parsed.role ? parsed.role.charAt(0).toUpperCase() + parsed.role.slice(1) : 'Author',
+      };
+    };
+    return {
+      title,
+      authors: authors.map(a => formatName(a)),
+    };
   },
 };
 
@@ -139,6 +154,8 @@ const parsers = {
     }
     return false;
   },
+  // OPF doesn't parse any paths
+  opf: () => false,
 };
 
 

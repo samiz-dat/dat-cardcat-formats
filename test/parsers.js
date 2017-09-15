@@ -147,7 +147,7 @@ const testData = [
     file: 'Hegemony and Socialist Strategy (1985).opf',
     format: 'oml',
     authorCount: 2,
-  },
+  }
 ];
 
 const formattedPaths = [
@@ -158,6 +158,14 @@ const formattedPaths = [
     calibre: 'Edward Said/After Colonialism: Imperial Histories and Postcolonial Displacements/metadata.opf',
     flat: 'Said, Edward - After Colonialism: Imperial Histories and Postcolonial Displacements.opf',
     oml: 'S/Said, Edward/After Colonialism: Imperial Histories and Postcolonial Displacements.opf',
+    opf: {
+      title: 'After Colonialism: Imperial Histories and Postcolonial Displacements',
+      authors: [{
+        value: 'Edward Said',
+        fileAs: 'Said, Edward',
+        role: 'Author',
+      }],
+    },
   },
   {
     authors: ['BAVO (eds.)'],
@@ -166,6 +174,14 @@ const formattedPaths = [
     calibre: 'BAVO (editors)/Cultural Activism Today. The Art of Over-Identification/metadata.opf',
     flat: 'BAVO (editors) - Cultural Activism Today. The Art of Over-Identification.opf',
     oml: 'B/BAVO (editors)/Cultural Activism Today. The Art of Over-Identification.opf',
+    opf: {
+      title: 'Cultural Activism Today. The Art of Over-Identification',
+      authors: [{
+        value: 'BAVO',
+        fileAs: 'BAVO',
+        role: 'Editors',
+      }],
+    },
   },
   {
     authors: ['Susan Buck-Morss'],
@@ -174,6 +190,14 @@ const formattedPaths = [
     calibre: 'Susan Buck-Morss/Hegel y Haití. La dialéctica amo-esclavo, una interpretación revolucionaria (Spanish)/metadata.opf',
     flat: 'Buck-Morss, Susan - Hegel y Haití. La dialéctica amo-esclavo, una interpretación revolucionaria (Spanish).opf',
     oml: 'B/Buck-Morss, Susan/Hegel y Haití. La dialéctica amo-esclavo, una interpretación revolucionaria (Spanish).opf',
+    opf: {
+      title: 'Hegel y Haití. La dialéctica amo-esclavo, una interpretación revolucionaria (Spanish)',
+      authors: [{
+        value: 'Susan Buck-Morss',
+        fileAs: 'Buck-Morss, Susan',
+        role: 'Author',
+      }],
+    },
   },
   {
     authors: ['Boris Buden', 'Želimir Žilnik', 'kuda.org'],
@@ -182,6 +206,24 @@ const formattedPaths = [
     calibre: 'Boris Buden, Želimir Žilnik, kuda.org/Uvod u prošlost (Serbian)/metadata.opf',
     flat: 'Buden, Boris; Žilnik, Želimir; kuda.org - Uvod u prošlost (Serbian).opf',
     oml: 'B/Buden, Boris; Žilnik, Želimir; kuda.org/Uvod u prošlost (Serbian).opf',
+    opf: {
+      title: 'Uvod u prošlost (Serbian)',
+      authors: [{
+        value: 'Boris Buden',
+        fileAs: 'Buden, Boris',
+        role: 'Author',
+      },
+      {
+        value: 'Želimir Žilnik',
+        fileAs: 'Žilnik, Želimir',
+        role: 'Author',
+      },
+      {
+        value: 'kuda.org',
+        fileAs: 'kuda.org',
+        role: 'Author',
+      }],
+    },
   },
 ];
 
@@ -243,6 +285,7 @@ describe('Cardcat formatters', () => {
       const formattedCalibre = formatPath(formattedPaths[i].authors, formattedPaths[i].title, formattedPaths[i].file, 'calibre');
       const formattedFlat = formatPath(formattedPaths[i].authors, formattedPaths[i].title, formattedPaths[i].file, 'flat');
       const formattedOML = formatPath(formattedPaths[i].authors, formattedPaths[i].title, formattedPaths[i].file, 'oml');
+      const formattedOPF = formatPath(formattedPaths[i].authors, formattedPaths[i].title, formattedPaths[i].file, 'opf');
 
       it('"calibre" has the path "' + formattedPaths[i].calibre + '"', () => {
         expect(formattedCalibre).to.eql(formattedPaths[i].calibre);
@@ -254,6 +297,10 @@ describe('Cardcat formatters', () => {
 
       it('"oml" has the path "' + formattedPaths[i].oml + '"', () => {
         expect(formattedOML).to.eql(formattedPaths[i].oml);
+      });
+
+      it('"opf" has the value "' + formattedPaths[i].opf + '"', () => {
+        expect(formattedOPF).to.deep.equal(formattedPaths[i].opf);
       });
 
     });
