@@ -1,5 +1,7 @@
 # Dat Cardcat Formats
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/samiz-dat/dat-cardcat-formats.svg)](https://greenkeeper.io/)
+
 Handles directory structures of library archives. These might be structured into different formats, like Calibre `Author Name/Title of Publication/filename.ext` or flat format, such as `Author Name, Alphabetized - Title of Publication.ext`. This provides ways of moving back and forth between the paths and object representations of that archived item.
 
 For example:
